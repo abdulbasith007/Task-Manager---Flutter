@@ -23,14 +23,54 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
+  final List<String> _tasks = [];
+  final TextEditingController _controller = TextEditingController();
+
+  void _addTask() {
+    setState(() {
+      _tasks.add(_controller.text);
+    });
+    _controller.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Management'),
       ),
-      body: const Center(
-        child: Text('No tasks available.'),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter task name',
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: _addTask,
+                  icon: const Icon(Icons.add),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_tasks[index]),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
