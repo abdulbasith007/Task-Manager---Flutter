@@ -15,6 +15,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class Task {
+  String name;
+  bool isCompleted;
+
+  Task({required this.name, this.isCompleted = false});
+}
+
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
 
@@ -23,14 +30,20 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  final List<String> _tasks = [];
+  final List<Task> _tasks = [];
   final TextEditingController _controller = TextEditingController();
 
   void _addTask() {
     setState(() {
-      _tasks.add(_controller.text);
+      _tasks.add(Task(name: _controller.text));
     });
     _controller.clear();
+  }
+
+  void _toggleTaskCompletion(int index) {
+    setState(() {
+      _tasks[index].isCompleted = !_tasks[index].isCompleted;
+    });
   }
 
   @override
@@ -65,7 +78,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
               itemCount: _tasks.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_tasks[index]),
+                  leading: Checkbox(
+                    value: _tasks[index].isCompleted,
+                    onChanged: (bool? value) {
+                      _toggleTaskCompletion(index);
+                    },
+                  ),
+                  title: Text(
+                    _tasks[index].name,
+                    style: TextStyle(
+                      decoration: _tasks[index].isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
                 );
               },
             ),
