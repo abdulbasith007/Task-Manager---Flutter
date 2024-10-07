@@ -18,8 +18,9 @@ class MyApp extends StatelessWidget {
 class Task {
   String name;
   bool isCompleted;
+  String priority;
 
-  Task({required this.name, this.isCompleted = false});
+  Task({required this.name, this.isCompleted = false, required this.priority});
 }
 
 class TaskListScreen extends StatefulWidget {
@@ -32,10 +33,12 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   final List<Task> _tasks = [];
   final TextEditingController _controller = TextEditingController();
+  String _selectedPriority = 'Low';
 
-  void _addTask() {
+  void _addTask(String taskName, String taskPriority) {
     setState(() {
-      _tasks.add(Task(name: _controller.text));
+      _tasks.add(Task(name: taskName, priority: taskPriority));
+      _selectedPriority = 'Low';
     });
     _controller.clear();
   }
@@ -43,6 +46,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
   void _toggleTaskCompletion(int index) {
     setState(() {
       _tasks[index].isCompleted = !_tasks[index].isCompleted;
+    });
+  }
+
+  void _deleteTask(int index) {
+    setState(() {
+      _tasks.removeAt(index);
     });
   }
 
@@ -66,8 +75,25 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     ),
                   ),
                 ),
+                DropdownButton<String>(
+                  value: _selectedPriority,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedPriority = newValue!;
+                    });
+                  },
+                  items: const [
+                    DropdownMenuItem(value: 'Low', child: Text('Low')),
+                    DropdownMenuItem(value: 'Medium', child: Text('Medium')),
+                    DropdownMenuItem(value: 'High', child: Text('High')),
+                  ],
+                ),
                 IconButton(
-                  onPressed: _addTask,
+                  onPressed: () {
+                    if (_controller.text.isNotEmpty) {
+                      _addTask(_controller.text, _selectedPriority);
+                    }
+                  },
                   icon: const Icon(Icons.add),
                 ),
               ],
@@ -91,6 +117,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
                     ),
+                  ),
+                  trailing: IconButton(
+                    onPressed: () => _deleteTask(index),
+                    icon: const Icon(Icons.delete),
                   ),
                 );
               },
