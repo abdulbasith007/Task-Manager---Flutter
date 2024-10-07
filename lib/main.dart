@@ -40,6 +40,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       _tasks.add(Task(name: taskName, priority: taskPriority));
       _selectedPriority = 'Low';
     });
+    _sortTasksByPriority();
     _controller.clear();
   }
 
@@ -52,6 +53,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
   void _deleteTask(int index) {
     setState(() {
       _tasks.removeAt(index);
+    });
+  }
+
+  void _sortTasksByPriority() {
+    setState(() {
+      _tasks.sort((a, b) {
+        const priorityOrder = ['High', 'Medium', 'Low'];
+        return priorityOrder
+            .indexOf(a.priority)
+            .compareTo(priorityOrder.indexOf(b.priority));
+      });
     });
   }
 
@@ -110,13 +122,21 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       _toggleTaskCompletion(index);
                     },
                   ),
-                  title: Text(
-                    _tasks[index].name,
-                    style: TextStyle(
-                      decoration: _tasks[index].isCompleted
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                    ),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          _tasks[index].name,
+                          style: TextStyle(
+                            decoration: _tasks[index].isCompleted
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      _buildPriorityLabel(_tasks[index].priority),
+                    ],
                   ),
                   trailing: IconButton(
                     onPressed: () => _deleteTask(index),
@@ -127,6 +147,35 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityLabel(String priority) {
+    Color priorityColor;
+    switch (priority) {
+      case 'High':
+        priorityColor = Colors.red;
+        break;
+      case 'Medium':
+        priorityColor = Colors.yellow;
+        break;
+      case 'Low':
+        priorityColor = Colors.green;
+        break;
+      default:
+        priorityColor = Colors.grey;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: priorityColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        priority,
+        style: const TextStyle(color: Colors.white, fontSize: 12),
       ),
     );
   }
