@@ -71,7 +71,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Management'),
+        title: const Text('Basic Task Management App'),
+        backgroundColor: Colors.blue,
       ),
       body: Column(
         children: [
